@@ -33,10 +33,12 @@ axios.get('https://api.github.com/users/dannygipson95')
 */
 axios.get('https://api.github.com/users/dannygipson95/followers')
   .then(response => {
-    console.log(response.data);
-    debugger;
-    response.data.forEach(follower =>
-      cardMaker(follower))
+    response.data.forEach(follower => {
+      axios.get(`https://api.github.com/users/${follower.login}`)
+        .then(responseII => {
+         cardMaker(responseII.data)
+        })
+    })
   })
 
 
@@ -60,7 +62,7 @@ axios.get('https://api.github.com/users/dannygipson95/followers')
     </div>
 */
 function cardMaker(userObj){
-  const {avatar_url, name, login, location, url, followers, following, bio} = userObj;
+  const {avatar_url, name, login, location, html_url, followers, following, bio} = userObj;
 
   // creating card elements
   const card = document.createElement('div');
@@ -69,8 +71,7 @@ function cardMaker(userObj){
   const cardName = document.createElement('h3');
   const cardUser = document.createElement('p');
   const cardLoc = document.createElement('p');
-  const cardProf = document.createElement('p')
-  const cardSpan = document.createElement('span')
+  const cardProf = document.createElement('p');
   const cardLink = document.createElement('a');
   const cardFollowers = document.createElement('p');
   const cardFollowing = document.createElement('p');
@@ -78,7 +79,7 @@ function cardMaker(userObj){
 
   //composing card elements
   const cardsContainer = document.querySelector('.cards');
-  cardsContainer.appendChild(card)
+  cardsContainer.appendChild(card);
   card.appendChild(cardImg);
   card.appendChild(cardInfo);
   cardInfo.appendChild(cardName);
@@ -100,12 +101,14 @@ function cardMaker(userObj){
   cardName.textContent = name;
   cardUser.textContent = login;
   cardLoc.textContent = location;
-  cardLink.textContent = url;
-  cardLink.href = url;
-  cardProf.textContent = `Profile: ${cardLink}`;
+  cardLink.textContent = html_url;
+  cardLink.href = html_url;
+  cardProf.textContent = `Profile: `;
   cardFollowers.textContent = `Followers: ${followers}`;
   cardFollowing.textContent = `Following: ${following}`;
   cardBio.textContent = `Bio: ${bio}`;
+  
+  cardProf.appendChild(cardLink);
 }
 /*
   List of LS Instructors Github username's:
